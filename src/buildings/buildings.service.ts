@@ -4,6 +4,8 @@ import { UpdateBuildingDto } from './dto/update-building.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Building } from './entities/building.entity';
+import { ResponseBuildingDto } from './dto/response-building.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class BuildingsService {
@@ -17,8 +19,14 @@ export class BuildingsService {
     return this.buildingsRepository.save(building);
   }
 
-  async findAll(): Promise<Building[]> {
-    return this.buildingsRepository.find();
+  async findAll(): Promise<ResponseBuildingDto[]> {
+    const buildings = await this.buildingsRepository.find({
+      relations: ['type'],
+    });
+
+    return plainToInstance(ResponseBuildingDto, buildings, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async findOne(id: number): Promise<Building> {
@@ -40,5 +48,23 @@ export class BuildingsService {
 
   async remove(id: number): Promise<void> {
     await this.buildingsRepository.delete(id);
+  }
+
+  async search(keyword: string): Promise<ResponseBuildingDto[]> {
+    const query = this.buildingsRepository
+      .createQueryBuilder('building')
+      .leftJoinAndSelect('building.type', 'type')
+      .where('LOWER(building.name) LIKE :keyword', {
+        keyword: `%${keyword.toLowerCase()}%`,
+      })
+      .orWhere('LOWER(building.direction) LIKE :keyword', {
+        keyword: `%${keyword.toLowerCase()}%`,
+      });
+
+    const results = await query.getMany();
+
+    return plainToInstance(ResponseBuildingDto, results, {
+      excludeExtraneousValues: true,
+    });
   }
 }

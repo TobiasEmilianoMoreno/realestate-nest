@@ -42,7 +42,7 @@ export class Building {
   direction: string;
 
   @Column({ type: 'boolean', nullable: false })
-  isSale: boolean;
+  sale: boolean;
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

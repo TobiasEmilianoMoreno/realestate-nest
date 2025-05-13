@@ -10,6 +10,7 @@ import {
 import { BuildingsService } from './buildings.service';
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { UpdateBuildingDto } from './dto/update-building.dto';
+import { ResponseBuildingDto } from './dto/response-building.dto';
 
 @Controller('buildings')
 export class BuildingsController {
@@ -21,13 +22,18 @@ export class BuildingsController {
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<ResponseBuildingDto[]> {
     return this.buildingsService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.buildingsService.findOne(+id);
+  }
+
+  @Get('search/:keyword')
+  search(@Param('keyword') keyword: string): Promise<ResponseBuildingDto[]> {
+    return this.buildingsService.search(keyword);
   }
 
   @Patch(':id')
