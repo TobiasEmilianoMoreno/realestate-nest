@@ -67,8 +67,7 @@ export class FirebaseAuthService {
         password,
       });
     } catch (error) {
-      console.error('🔥 Error al crear usuario en Firebase:', error);
-      throw new Error('Error al crear el usuario en Firebase');
+      throw new Error('Error al crear el usuario en Firebase', error);
     }
   }
 }
