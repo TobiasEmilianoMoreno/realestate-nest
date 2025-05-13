@@ -1,0 +1,18 @@
+services:
+  api:
+    build: .
+    container_name: realestate-api
+    depends_on: []
+    env_file:
+      - .env.development
+    environment:
+      NODE_ENV: development
+    ports:
+      - "${API_PORT:-3000}:3000"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev
+
+volumes:
+  db_data:
