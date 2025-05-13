@@ -25,7 +25,7 @@ npm install @nestjs/jwt @nestjs/passport passport passport-jwt
 npm install @nestjs/jwt passport-jwt bcrypt
 npm install -D @types/bcrypt
 npm install passport-custom
-
+npm i cloudinary
 ```
 
 ### Para desarrollo
