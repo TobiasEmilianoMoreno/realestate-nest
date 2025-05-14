@@ -60,14 +60,17 @@ export class FirebaseAuthService {
     }
   }
 
-  async createUserInFirebase(email: string, password: string): Promise<void> {
+  async createUserInFirebase(
+    email: string,
+    password: string,
+  ): Promise<admin.auth.UserRecord> {
     try {
-      await admin.auth().createUser({
+      return await admin.auth().createUser({
         email,
         password,
       });
-    } catch (error) {
-      throw new Error('Error al crear el usuario en Firebase', error);
+    } catch {
+      throw new Error('Error al crear el usuario en Firebase');
     }
   }
 }

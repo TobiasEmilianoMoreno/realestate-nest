@@ -11,6 +11,7 @@ import { BuildingsService } from './buildings.service';
 import { CreateBuildingDto } from './dto/create-building.dto';
 import { UpdateBuildingDto } from './dto/update-building.dto';
 import { ResponseBuildingDto } from './dto/response-building.dto';
+import { FilterBuildingDto } from './dto/filter-building.dto';
 
 @Controller('buildings')
 export class BuildingsController {
@@ -34,6 +35,11 @@ export class BuildingsController {
   @Get('search/:keyword')
   search(@Param('keyword') keyword: string): Promise<ResponseBuildingDto[]> {
     return this.buildingsService.search(keyword);
+  }
+
+  @Post('filter')
+  filter(@Body() filters: FilterBuildingDto): Promise<ResponseBuildingDto[]> {
+    return this.buildingsService.filter(filters);
   }
 
   @Patch(':id')

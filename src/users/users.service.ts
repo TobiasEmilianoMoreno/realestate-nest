@@ -14,11 +14,12 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const { email, password } = createUserDto;
+    const { email, password, firebaseUuid } = createUserDto;
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = this.usersRepository.create({
       email,
       password: hashedPassword,
+      firebase_uid: firebaseUuid,
     });
     return this.usersRepository.save(user);
   }

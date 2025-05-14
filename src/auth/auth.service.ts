@@ -65,20 +65,23 @@ export class AuthService {
     }
 
     try {
-      await this.firebaseAuthService.createUserInFirebase(email, password);
+      const firebaseUser = await this.firebaseAuthService.createUserInFirebase(
+        email,
+        password,
+      );
+      const user = await this.usersService.create({
+        email,
+        password,
+        firebaseUuid: firebaseUser.uid,
+      });
+
+      const payload = { sub: user.id, email: user.email };
+      return { access_token: this.jwtService.sign(payload) };
     } catch {
       throw new InternalServerErrorException(
         'Error al registrar el usuario en Firebase',
       );
     }
-
-    const user = await this.usersService.create({
-      email,
-      password,
-    });
-
-    const payload = { sub: user.id, email: user.email };
-    return { access_token: this.jwtService.sign(payload) };
   }
 
   async loginWithFirebase(idToken: string): Promise<{ access_token: string }> {
@@ -94,6 +97,7 @@ export class AuthService {
       user = await this.usersService.create({
         email: decoded.email,
         password: '',
+        firebaseUuid: decoded.uid,
       });
     }
 
