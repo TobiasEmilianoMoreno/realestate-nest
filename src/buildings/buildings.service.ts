@@ -72,7 +72,8 @@ export class BuildingsService {
     keyword?: string;
     typeName?: string;
     ambientes?: string;
-    priceRange?: string;
+    minPrice?: number;
+    maxPrice?: number;
   }): Promise<ResponseBuildingDto[]> {
     const qb = this.buildingsRepository
       .createQueryBuilder('building')
@@ -105,27 +106,16 @@ export class BuildingsService {
       }
     }
 
-    if (filters.priceRange) {
-      let min: number = 0;
-      let max: number = Number.MAX_SAFE_INTEGER;
-      switch (filters.priceRange) {
-        case '0-50000':
-          max = 50000;
-          break;
-        case '50001-100000':
-          min = 50001;
-          max = 100000;
-          break;
-        case '100001-150000':
-          min = 100001;
-          max = 150000;
-          break;
-        case '150001-200000':
-          min = 150001;
-          max = 200000;
-          break;
-      }
-      qb.andWhere('building.price BETWEEN :min AND :max', { min, max });
+    if (filters.minPrice) {
+      qb.andWhere('building.price >= :minPrice', {
+        minPrice: filters.minPrice,
+      });
+    }
+
+    if (filters.maxPrice) {
+      qb.andWhere('building.price <= :maxPrice', {
+        maxPrice: filters.maxPrice,
+      });
     }
 
     const results = await qb.getMany();

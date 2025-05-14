@@ -1,4 +1,10 @@
-import { IsBoolean, IsIn, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { TypeBuildingDto } from './response-building.dto';
 import { Type } from 'class-transformer';
 
@@ -24,6 +30,10 @@ export class FilterBuildingDto {
   ambientes?: string;
 
   @IsOptional()
-  @IsIn(['0-50000', '50001-100000', '100001-150000', '150001-200000'])
-  priceRange?: string;
+  @IsNumber()
+  minPrice?: number;
+
+  @IsOptional()
+  @IsNumber()
+  maxPrice?: number;
 }
