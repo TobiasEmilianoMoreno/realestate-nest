@@ -1,7 +1,7 @@
 FROM node:20-alpine AS build
 WORKDIR /usr/src/app
 
-COPY package*.json tsconfig*.json nest-cli.json ./
+COPY package*.json ./
 RUN npm ci
 
 COPY . .
@@ -18,4 +18,4 @@ RUN npm ci --omit=dev
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/src/main.js"]
