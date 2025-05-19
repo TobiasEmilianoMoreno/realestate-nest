@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { BuildingsModule } from './buildings/buildings.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { RevenueModule } from './revenue/revenue.module';
 
 import ormconfig from '../ormconfig';
 
@@ -20,6 +21,7 @@ import ormconfig from '../ormconfig';
     BuildingsModule,
     UsersModule,
     AuthModule,
+    RevenueModule,
   ],
   controllers: [AppController],
   providers: [AppService],
