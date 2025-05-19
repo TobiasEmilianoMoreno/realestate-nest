@@ -62,6 +62,16 @@ CREATE TABLE sales_stats (
   value      INTEGER NOT NULL
 );
 
+CREATE TABLE transactions (
+    id SERIAL PRIMARY KEY,
+    image_url VARCHAR(255),
+    date DATE,
+    name VARCHAR(100),
+    price DECIMAL(10, 2),
+    type VARCHAR(20) CHECK (type IN ('Rent', 'Sell')),
+    status VARCHAR(20) CHECK (status IN ('Paid', 'Unpaid'))
+);
+
 INSERT INTO users (firebase_uid, email, password, role) VALUES
   ('firebase_uid_1', 'user1@example.com', 'password1', 'admin'),
   ('firebase_uid_2', 'user2@example.com', 'password2', 'user'),
@@ -159,3 +169,10 @@ INSERT INTO sales_stats (period_id, channel, value) VALUES
   ((SELECT id FROM periods WHERE code = 'yearly'), 'Via Social Media', 18),
   ((SELECT id FROM periods WHERE code = 'yearly'), 'Via Digital Marketing', 8),
   ((SELECT id FROM periods WHERE code = 'yearly'), 'Via Others', 4);
+
+INSERT INTO transactions (image_url, date, name, price, type, status) VALUES
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-1_zsml7u.jpg', '2023-08-10', 'Mr. Rocky', 12450.00, 'Rent', 'Paid'),
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-2_g6bon9.jpg', '2023-08-10', 'Mr. Cristino', 12450.00, 'Sell', 'Unpaid'),
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-3_ndj383.jpg', '2023-08-10', 'Mr. Jack', 12450.00, 'Sell', 'Paid'),
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-4_tuhayu.jpg', '2023-08-10', 'Ms. Cally', 12450.00, 'Sell', 'Unpaid'),
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-5_hwysfs.jpg', '2023-08-10', 'Ms. Cristina', 12450.00, 'Rent', 'Unpaid');

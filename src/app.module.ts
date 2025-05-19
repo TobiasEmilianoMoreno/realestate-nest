@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RevenueModule } from './revenue/revenue.module';
 import { SalesModule } from './sales/sales.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 import ormconfig from '../ormconfig';
 
@@ -24,6 +25,7 @@ import ormconfig from '../ormconfig';
     AuthModule,
     RevenueModule,
     SalesModule,
+    TransactionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
