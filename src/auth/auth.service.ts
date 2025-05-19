@@ -50,7 +50,10 @@ export class AuthService {
     };
   }
 
-  async register(email: string, password: string) {
+  async register(
+    email: string,
+    password: string,
+  ): Promise<{ access_token: string }> {
     const isEmailRegisteredInFirebase =
       await this.firebaseAuthService.isEmailRegistered(email);
     if (isEmailRegisteredInFirebase) {
@@ -76,7 +79,9 @@ export class AuthService {
       });
 
       const payload = { sub: user.id, email: user.email };
-      return { access_token: this.jwtService.sign(payload) };
+      return {
+        access_token: this.jwtService.sign(payload),
+      };
     } catch {
       throw new InternalServerErrorException(
         'Error al registrar el usuario en Firebase',

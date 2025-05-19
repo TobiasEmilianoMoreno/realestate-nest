@@ -10,7 +10,6 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() { email, password }: CreateUserDto) {
-    console.log(process.env.FIREBASE_PROJECT_ID);
     return this.authService.register(email, password);
   }
 

@@ -1,4 +1,3 @@
-USE real_estate;
 
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
@@ -73,4 +72,3 @@ VALUES
 ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747166758/1971983616_odltyr.webp', 'Depto Norte', 2, 890000, 2, 1, NULL, NULL, 60, 'Urquiza 1200 Rosario', TRUE),
 ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747166759/1945793957_kknlmy.webp', 'Edificio Smart', 2, 970000, 3, 2, NULL, NULL, 70, 'Uriburu 900 Rosario', TRUE),
 ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747166759/1961082598_nf5en8.webp', 'Edificio Familiar', 2, 1750000, NULL, NULL, 6, 'En Construcción', 200, 'Brown 1800 Rosario', FALSE);
-h
