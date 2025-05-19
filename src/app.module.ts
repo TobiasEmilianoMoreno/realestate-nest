@@ -8,6 +8,7 @@ import { BuildingsModule } from './buildings/buildings.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RevenueModule } from './revenue/revenue.module';
+import { SalesModule } from './sales/sales.module';
 
 import ormconfig from '../ormconfig';
 
@@ -22,6 +23,7 @@ import ormconfig from '../ormconfig';
     UsersModule,
     AuthModule,
     RevenueModule,
+    SalesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

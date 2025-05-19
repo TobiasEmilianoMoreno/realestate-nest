@@ -55,6 +55,13 @@ CREATE TABLE revenue_stats (
   revenue   INTEGER NOT NULL
 );
 
+CREATE TABLE sales_stats (
+  id         SERIAL PRIMARY KEY,
+  period_id  INTEGER NOT NULL REFERENCES periods(id) ON DELETE RESTRICT,
+  channel    VARCHAR(100) NOT NULL,
+  value      INTEGER NOT NULL
+);
+
 INSERT INTO users (firebase_uid, email, password, role) VALUES
   ('firebase_uid_1', 'user1@example.com', 'password1', 'admin'),
   ('firebase_uid_2', 'user2@example.com', 'password2', 'user'),
@@ -92,7 +99,8 @@ INSERT INTO buildings (image, name, type_id, price, beds, bathrooms, floors, sta
 
 INSERT INTO periods (code) VALUES
   ('monthly'),
-  ('yearly');
+  ('yearly'),
+  ('weekly');
 
 INSERT INTO period_translations (period_id, locale, label) VALUES
   ( (SELECT id FROM periods WHERE code = 'monthly'), 'en', 'Monthly' ),
@@ -127,3 +135,27 @@ INSERT INTO revenue_stats (period_id, sales, revenue) VALUES
   ((SELECT id FROM periods WHERE code='yearly'), 105,  180),
   ((SELECT id FROM periods WHERE code='yearly'),  65,   75),
   ((SELECT id FROM periods WHERE code='yearly'), 110,  115);
+
+INSERT INTO sales_stats (period_id, channel, value) VALUES
+  ((SELECT id FROM periods WHERE code = 'monthly'), 'Via Website', 50),
+  ((SELECT id FROM periods WHERE code = 'monthly'), 'Via Team Member', 12),
+  ((SELECT id FROM periods WHERE code = 'monthly'), 'Via Agents', 6),
+  ((SELECT id FROM periods WHERE code = 'monthly'), 'Via Social Media', 15),
+  ((SELECT id FROM periods WHERE code = 'monthly'), 'Via Digital Marketing', 12),
+  ((SELECT id FROM periods WHERE code = 'monthly'), 'Via Others', 5);
+
+INSERT INTO sales_stats (period_id, channel, value) VALUES
+  ((SELECT id FROM periods WHERE code = 'weekly'), 'Via Website', 60),
+  ((SELECT id FROM periods WHERE code = 'weekly'), 'Via Team Member', 10),
+  ((SELECT id FROM periods WHERE code = 'weekly'), 'Via Agents', 8),
+  ((SELECT id FROM periods WHERE code = 'weekly'), 'Via Social Media', 12),
+  ((SELECT id FROM periods WHERE code = 'weekly'), 'Via Digital Marketing', 7),
+  ((SELECT id FROM periods WHERE code = 'weekly'), 'Via Others', 3);
+
+INSERT INTO sales_stats (period_id, channel, value) VALUES
+  ((SELECT id FROM periods WHERE code = 'yearly'), 'Via Website', 45),
+  ((SELECT id FROM periods WHERE code = 'yearly'), 'Via Team Member', 15),
+  ((SELECT id FROM periods WHERE code = 'yearly'), 'Via Agents', 10),
+  ((SELECT id FROM periods WHERE code = 'yearly'), 'Via Social Media', 18),
+  ((SELECT id FROM periods WHERE code = 'yearly'), 'Via Digital Marketing', 8),
+  ((SELECT id FROM periods WHERE code = 'yearly'), 'Via Others', 4);
