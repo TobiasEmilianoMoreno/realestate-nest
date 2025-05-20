@@ -63,14 +63,49 @@ CREATE TABLE sales_stats (
 );
 
 CREATE TABLE transactions (
-    id SERIAL PRIMARY KEY,
-    image_url VARCHAR(255),
-    date DATE,
-    name VARCHAR(100),
-    price DECIMAL(10, 2),
-    type VARCHAR(20) CHECK (type IN ('Rent', 'Sell')),
-    status VARCHAR(20) CHECK (status IN ('Paid', 'Unpaid'))
+  id SERIAL PRIMARY KEY,
+  image_url VARCHAR(255),
+  building_id  INTEGER REFERENCES buildings(id) ON DELETE SET NULL ON UPDATE CASCADE,
+  date DATE,
+  name VARCHAR(100),
+  price DECIMAL(10, 2),
+  type VARCHAR(20) CHECK (type IN ('Rent', 'Sell')),
+  status VARCHAR(20) CHECK (status IN ('Paid', 'Unpaid'))
 );
+
+CREATE INDEX idx_transactions_building_id ON transactions(building_id);
+
+CREATE OR REPLACE VIEW building_overview AS
+  WITH last_tx AS (
+    SELECT
+      building_id,
+      price       AS last_price
+    FROM (
+      SELECT
+        building_id,
+        price,
+        ROW_NUMBER() OVER (
+          PARTITION BY building_id
+          ORDER BY date DESC
+        ) AS rn
+      FROM transactions
+      WHERE building_id IS NOT NULL
+    ) t
+    WHERE t.rn = 1
+  )
+  SELECT
+    b.id                  AS id,
+    b.name                AS building_name,
+    b.image               AS image_url,
+    ROUND(
+      (b.price - lt.last_price)
+      / NULLIF(lt.last_price, 0)
+      * 100, 2
+    )                     AS pct_change,
+    b.direction           AS direction
+  FROM buildings b
+  JOIN last_tx lt
+    ON lt.building_id = b.id;
 
 INSERT INTO users (firebase_uid, email, password, role) VALUES
   ('firebase_uid_1', 'user1@example.com', 'password1', 'admin'),
@@ -105,7 +140,12 @@ INSERT INTO buildings (image, name, type_id, price, beds, bathrooms, floors, sta
   ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747166673/c3e36ed94f551eb8dcb41d282d824e04_jskojx.jpg', 'Brejas Birras', 2, 2100000, NULL, NULL, 9, 'Terminado', 270, 'Rivadavia 1800 Rosario', TRUE),
   ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747166758/1971983616_odltyr.webp', 'Depto Norte', 2, 890000, 2, 1, NULL, NULL, 60, 'Urquiza 1200 Rosario', TRUE),
   ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747166759/1945793957_kknlmy.webp', 'Edificio Smart', 2, 970000, 3, 2, NULL, NULL, 70, 'Uriburu 900 Rosario', TRUE),
-  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747166759/1961082598_nf5en8.webp', 'Edificio Familiar', 2, 1750000, NULL, NULL, 6, 'En Construcción', 200, 'Brown 1800 Rosario', FALSE);
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747166759/1961082598_nf5en8.webp', 'Edificio Familiar', 2, 1750000, NULL, NULL, 6, 'En Construcción', 200, 'Brown 1800 Rosario', FALSE),
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-1_zsml7u.jpg', 'Mr. Rocky', 1, 11080.5, NULL, NULL, NULL, 'Rent', 200, 'Rosario', FALSE),
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-2_g6bon9.jpg', 'Mr. Cristino', 1, 14940.00, NULL, NULL, NULL, 'Sell', 150, 'Rosario', TRUE),
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-3_ndj383.jpg', 'Mr. Jack', 1, 15438.00, NULL, NULL, NULL, 'Sell', 300, 'Rosario', TRUE),
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-4_tuhayu.jpg', 'Ms. Cally', 1, 15064.50, NULL, NULL, NULL, 'Rent', 200, 'Rosario', TRUE),
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-5_hwysfs.jpg', 'Ms. Cristina', 1, 18052.50, NULL, NULL, NULL, 'Rent', 100, 'Rosario', FALSE);
 
 INSERT INTO periods (code) VALUES
   ('monthly'),
@@ -170,9 +210,11 @@ INSERT INTO sales_stats (period_id, channel, value) VALUES
   ((SELECT id FROM periods WHERE code = 'yearly'), 'Via Digital Marketing', 8),
   ((SELECT id FROM periods WHERE code = 'yearly'), 'Via Others', 4);
 
-INSERT INTO transactions (image_url, date, name, price, type, status) VALUES
-  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-1_zsml7u.jpg', '2023-08-10', 'Mr. Rocky', 12450.00, 'Rent', 'Paid'),
-  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-2_g6bon9.jpg', '2023-08-10', 'Mr. Cristino', 12450.00, 'Sell', 'Unpaid'),
-  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-3_ndj383.jpg', '2023-08-10', 'Mr. Jack', 12450.00, 'Sell', 'Paid'),
-  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-4_tuhayu.jpg', '2023-08-10', 'Ms. Cally', 12450.00, 'Sell', 'Unpaid'),
-  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-5_hwysfs.jpg', '2023-08-10', 'Ms. Cristina', 12450.00, 'Rent', 'Unpaid');
+INSERT INTO transactions (image_url, building_id, date, name, price, type, status) VALUES
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-1_zsml7u.jpg',23, '2023-08-10', 'Mr. Rocky', 12450.00, 'Rent', 'Paid'),
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-2_g6bon9.jpg',24, '2023-08-10', 'Mr. Cristino', 12450.00, 'Sell', 'Unpaid'),
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-3_ndj383.jpg',25, '2023-08-10', 'Mr. Jack', 12450.00, 'Sell', 'Paid'),
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-4_tuhayu.jpg',26, '2023-08-10', 'Ms. Cally', 12450.00, 'Sell', 'Unpaid'),
+  ('https://res.cloudinary.com/dzzqhjmlf/image/upload/v1747680228/house-5_hwysfs.jpg',27, '2023-08-10', 'Ms. Cristina', 12450.00, 'Rent', 'Unpaid');
+
+SELECT * FROM building_overview;
