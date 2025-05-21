@@ -5,16 +5,18 @@ import {
   Headers,
   ParseEnumPipe,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { RevenueService } from './revenue.service';
 import { RevenueStatDto } from './dto/revenue-state.dto';
 import { ViewType } from './enum/view-type.enum';
-
+import { AuthGuard } from 'src/common/guards/auth.guard';
 @Controller('revenues')
 export class RevenueController {
   constructor(private readonly revenueService: RevenueService) {}
 
   @Get()
+  @UseGuards(AuthGuard)
   async getRevenue(
     @Query(
       'viewType',

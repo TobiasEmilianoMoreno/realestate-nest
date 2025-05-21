@@ -1,9 +1,8 @@
 // src/auth/auth.module.ts
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
-import { FirebaseAuthStrategy } from './firebase.strategy';
 import { UsersModule } from 'src/users/users.module';
 import { FirebaseAuthService } from './firebase-auth.service';
 import { AuthController } from './auth.controller';
@@ -12,13 +11,20 @@ import { AuthController } from './auth.controller';
   imports: [
     UsersModule,
     ConfigModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'secretKey',
-      signOptions: { expiresIn: '1h' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET');
+        return {
+          secret,
+          signOptions: { expiresIn: '1h' },
+        };
+      },
+      inject: [ConfigService],
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, FirebaseAuthService, FirebaseAuthStrategy],
+  providers: [AuthService, FirebaseAuthService],
   exports: [AuthService, FirebaseAuthService],
 })
 export class AuthModule {}
