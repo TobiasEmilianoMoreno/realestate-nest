@@ -3,8 +3,8 @@ CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   firebase_uid VARCHAR(128) UNIQUE NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  role VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NOT NULL,  
+  role VARCHAR(255) NOT NULL,  
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -107,10 +107,6 @@ CREATE OR REPLACE VIEW building_overview AS
   JOIN last_tx lt
     ON lt.building_id = b.id;
 
-INSERT INTO users (firebase_uid, email, password, role) VALUES
-  ('firebase_uid_1', 'user1@example.com', 'password1', 'admin'),
-  ('firebase_uid_2', 'user2@example.com', 'password2', 'user'),
-  ('firebase_uid_3', 'user3@example.com', 'password3', 'user');
 
 INSERT INTO building_types (name) VALUES
   ('Casa'),
